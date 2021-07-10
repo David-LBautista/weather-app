@@ -1,9 +1,8 @@
 {
-  "name": " ",
+  "name": "weather-app",
   "version": "0.0.1",
-  "description": "",
-  "keywords": "",
-  "license": "",
+  "keywords": [],
+  "license": "ISC",
   "author": "",
   "scripts": {
     "build": "parcel build index.html",
@@ -12,6 +11,26 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.12.4"
+    "autoprefixer": "^10.3.0",
+    "parcel-bundler": "^1.12.4",
+    "postcss": "^8.3.5",
+    "tailwindcss": "^2.2.4",
+    "vite": "^2.4.1"
+  },
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/David-LBautista/weather-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/David-LBautista/weather-app/issues"
+  },
+  "homepage": "https://github.com/David-LBautista/weather-app#readme",
+  "description": "",
+  "dependencies": {
+    "moment": "^2.29.1"
   }
 }
