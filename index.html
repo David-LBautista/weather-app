@@ -34,28 +34,31 @@
 <body>
 
 
-  <div class="header">
+<div class="header">
 
   <!--Content before waves-->
-    <div class="w-screen h-screen px-8">
+    <div class="w-screen h-screen px-8 sm:text-5xl">
       <div class="py-8">
         <p id="today" class="pb-4"></p>
         <form action="" id="formulario">
         <div class="flex justify-center items-center">
-            <input class="input w-32 p-1 text-xs text-center" spellcheck="false" type="text" name="ciudad" id="ciudad" placeholder="Search your city">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <input class="input w-32 p-1  sm:py-1 text-xs sm:text-xl sm:w-56 text-center" spellcheck="false" type="text" name="ciudad" id="ciudad" placeholder="Search your city">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-4 sm:h-8 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            <button id="enviar" class="px-2 py-1 text-xs border rounded border-white border-opacity-50" type="submit">Search</button>
+            <button id="enviar" class="px-2 py-1 text-xs sm:text-lg border rounded border-white border-opacity-50" type="submit">Search</button>
             
           </div>
         </form>
       </div>
       <div id="contenido" class="h-96 flex justify-center items-center"></div>
-
-      <div id="dias" class="my-5 flex justify-center items-center"></div>
+      <a href="#contenido-hora" class="border border-white opacity-80 px-2 py-2 mt-20 text-l sm:text-2xl rounded cursor-pointer">
+        Ver más.
+      </a>
+      
     </div>
+    
 
     <!--Waves Container-->
     <div>
@@ -65,7 +68,7 @@
   <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
   </defs>
   <g class="parallax">
-  <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.7" />
+  <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.7)" />
   <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.5)" />
   <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.3)" />
   <use xlink:href="#gentle-wave" x="48" y="7" fill="#fff" />
@@ -74,12 +77,12 @@
     </div>
     <!--Waves end-->
   
-  </div>
+</div>
   <!--Header ends-->
   
   <!--Content starts-->
-  <div id="contenido-hora" class="h-1/2 w-screen px-8 py-6">
-      <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Temporibus, blanditiis. Doloremque assumenda at eum quibusdam dolorem illum ipsum necessitatibus consectetur, totam similique laborum modi provident, animi accusantium laudantium. Aut, odio?</p>
+  <div id="contenido-hora" class="horas h-1/2 w-screen px-2 py-6 grid grid-cols-2 sm:grid-cols-4 gap-1 md:grid-cols-4">
+      
   </div>
   <!--Content ends-->
 
@@ -105,3 +108,19 @@
 </body>
 
 </html>
+
+<!-- 
+  <div class="lds-spinner">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+ -->

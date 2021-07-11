@@ -5,25 +5,26 @@ const formulario = document.querySelector('#formulario');
 const contenido = document.querySelector('#contenido');
 const diasDiv = document.querySelector('#dias');
 const todayp = document.querySelector('#today');
+const contenidoHora = document.querySelector('#contenido-hora');
 
 // Fechas
 const hoy = moment().format('ll');
-const mañana = moment().add(1, 'days').format('dddd');
-const pasadom = moment().add(2, 'days').format('dddd');
-const pasadom2 = moment().add(3, 'days').format('dddd');
+const mañana = moment().add(1, 'days').format('MMM Do YY');
+const pasadom = moment().add(2, 'days').format('MMM Do YY');
+const pasadom2 = moment().add(3, 'days').format('MMM Do YY');
 
 
 document.addEventListener('DOMContentLoaded', () => {
     todayp.textContent = hoy;
     formulario.addEventListener('submit', sendCityPerHour);
+
 });
 
 
 function conectarApiPorHoras(ciudad){
 
-    const count = 5;
     const appId = '2c08e8b1b6fcbe8974c2c190ac49d00f';
-    const url = `https://api.openweathermap.org/data/2.5/forecast?q=${ciudad}&cnt=24&appid=${appId}`;
+    const url = `https://api.openweathermap.org/data/2.5/forecast?q=${ciudad}&cnt=18&appid=${appId}`;
 
     //Mostramos un spinner
 
@@ -33,15 +34,7 @@ function conectarApiPorHoras(ciudad){
                 return response.json();
             })
             .then( data => {
-
-                const {list, city } = data;
-                
-                const day1 =_.without(list, list[9],list[10],list[11],list[12],list[13],list[14],list[15],list[16],list[17],list[18],list[19],list[20],list[21],list[22],list[23],list[24]);
-                const day2 =_.without(list, list[1],list[2],list[3],list[4],list[5],list[6],list[7],list[8],list[17],list[18],list[19],list[20],list[21],list[22],list[23],list[24]);
-                const day3 =_.without(list, list[1],list[2],list[3],list[4],list[5],list[6],list[7],list[8],list[9],list[10],list[11],list[12],list[13],list[14],list[15],list[16]);
-
-                // creaHtml(day1, day2, day3, city);
-                creaHtml(data);
+                mostrarHoras(data);
             });
 }
 
@@ -49,21 +42,27 @@ function climaActual(ciudad){
 
     const appIdClima = '2c08e8b1b6fcbe8974c2c190ac49d00f';
     const urlClima = `https://api.openweathermap.org/data/2.5/weather?q=${ciudad}&appid=${appIdClima}`;
-
-    fetch(urlClima)
+    spinner();
+    setTimeout(() => {
+        fetch(urlClima)
             .then(response => {
                 return response.json();
             })
             .then( data => {
-                console.log(data);
+
+                if (data.cod === "404") {
+                    alerta(`No se encontro una ciudad con el nombre: ${ciudad}`);
+                    return;
+                }
                 const {  main: { temp } } = data;
                 kelvinCentigrados(temp);
                 diaActual(data);
+            }).catch(err => {
+                console.log(err);
             });
+    }, 1700);
+    
 }
-
-
-
 
 function sendCityPerHour(e){
     e.preventDefault();
@@ -71,7 +70,7 @@ function sendCityPerHour(e){
     const ciudad = document.querySelector('#ciudad').value;
 
     if(ciudad === ''){
-        console.log('Debes introducir una ciudad válida');
+        alerta('Debes introducir una ciudad válida.');
         return;
     }
 
@@ -79,45 +78,114 @@ function sendCityPerHour(e){
     climaActual(ciudad);
 }
 
-function creaHtml(dia1, dia2, dia3, ciudad ){
 
-    while (dias.firstChild) {
-        dias.removeChild(dias.firstChild);
+function mostrarHoras(data){
+
+    const {list} = data;
+    while (contenidoHora.firstChild) {
+        contenidoHora.removeChild(contenidoHora.firstChild);
     }
-    console.log(hoy);
-    
-    const dia1Div = document.createElement('div');
-    const dia2Div = document.createElement('div');
-    const dia3Div = document.createElement('div');
 
-    dia1Div.innerHTML = `
-        <div class="py-4 mx-4">
-            <a href="#contenido-hora" id="dia1" class="cursor-pointer">${mañana}</a> 
+    list.forEach(( {weather, dt_txt}) => {
+        const clima = weather[0];
+        const { description, icon } = clima; 
+        const horaDiv = document.createElement('div');
+        horaDiv.innerHTML = `
+        <div class="mx-4 text-xs text-center">
+            <p class="">${dt_txt}</p>
+            <p class="capitalize">${description}</p>
         </div>
-    `;
-    dia2Div.innerHTML = `
-        <div class="py-4 mx-4">
-            <a href="#contenido-hora" id="dia2" class="cursor-pointer">${pasadom}</a> 
-        </div>
-    `;
-    dia3Div.innerHTML = `
-        <div class="py-4 mx-4">
-            <a href="#contenido-hora" id="dia3" class="cursor-pointer">${pasadom2}</a> 
-        </div>
-    `;
-    
-
-    dias.appendChild(dia1Div);
-    dias.appendChild(dia2Div);
-    dias.appendChild(dia3Div);
-
+        `;
+        switch (description) {
+            case 'light rain':
+                const img = document.createElement('img');
+                    img.src = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+                    img.classList.add('w-20', 'h-20', 'mx-auto');
+                    horaDiv.appendChild(img);
+                break;
+            case 'clear sky':
+                const img2 = document.createElement('img');
+                    img2.src = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+                    img2.classList.add('w-20', 'h-20', 'mx-auto');
+                    horaDiv.appendChild(img2);
+                break;
+            case 'few clouds':
+                const img3 = document.createElement('img');
+                    img3.src = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+                    img3.classList.add('w-20', 'h-20', 'mx-auto');
+                    horaDiv.appendChild(img3);
+                break;
+            case 'scattered clouds':
+                const img4 = document.createElement('img');
+                    img4.src = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+                    img4.classList.add('w-20', 'h-20', 'mx-auto');
+                    horaDiv.appendChild(img4);
+                break;
+            case 'broken clouds':
+                const img5 = document.createElement('img');
+                    img5.src = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+                    img5.classList.add('w-20', 'h-20', 'mx-auto');
+                    horaDiv.appendChild(img5);
+                break;
+            case 'shower rain':
+                const img6 = document.createElement('img');
+                    img6.src = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+                    img6.classList.add('w-20', 'h-20', 'mx-auto');
+                    horaDiv.appendChild(img6);
+                break;
+            case 'overcast clouds':
+                const img7 = document.createElement('img');
+                    img7.src = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+                    img7.classList.add('w-20', 'h-20', 'mx-auto');
+                    horaDiv.appendChild(img7);
+                break;
+            case 'rain':
+                const img8 = document.createElement('img');
+                    img8.src = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+                    img8.classList.add('w-20', 'h-20', 'mx-auto');
+                    horaDiv.appendChild(img8);
+                break;
+            case 'thunderstorm':
+                const img9 = document.createElement('img');
+                    img9.src = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+                    img9.classList.add('w-20', 'h-20', 'mx-auto');
+                    horaDiv.appendChild(img9);
+                break;
+            case 'snow':
+                const img10 = document.createElement('img');
+                    img10.src = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+                    img10.classList.add('w-20', 'h-20', 'mx-auto');
+                    horaDiv.appendChild(img10);
+                break;
+            case 'mist':
+                const img11 = document.createElement('img');
+                    img11.src = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+                    img11.classList.add('w-20', 'h-20', 'mx-auto');
+                    horaDiv.appendChild(img11);
+                break;
+            case 'moderate rain':
+            const img12 = document.createElement('img');
+                img12.src = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+                img12.classList.add('w-20', 'h-20', 'mx-auto');
+                horaDiv.appendChild(img12);
+                break;
+            default:
+                const img13 = document.createElement('img');
+                    img13.src = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+                    img13.alt = 'Unavailable';
+                    horaDiv.appendChild(img13);
+                break;
+        }
+        contenidoHora.appendChild(horaDiv);    
+    });
+        
 }
+
 
 function diaActual(data){
     const {weather} = data;
     const weather2 = weather[0];
     const { description, icon, main } = weather2; // Como esta el clima
-    console.log(icon);
 
     const { name, sys: { country}, main: { temp } } = data;
     const centigrados = kelvinCentigrados(temp); //Conversion a centigrados
@@ -132,13 +200,29 @@ function diaActual(data){
                 <p class="text-7xl">${ centigrados }&#8451;</p>
             </div>
             <div class="pt-10">
-                <p class="capitalize">${ description }</p>
+                <p class="capitalize text-3xl opacity-70" style="color: #111827;">${ description }</p>
                 <img src="http://openweathermap.org/img/wn/${icon}@2x.png" class="h-28 w-28 mx-auto">
             </div>
             </div>
             `;
             contenido.appendChild(card); 
             break;
+        case 'haze':
+            const card13 = document.createElement('div');
+            card13.innerHTML = `
+            <div class="">
+            <div>
+                <h2 class="text-3xl mb-2">${ name }, ${country }</h2>
+                <p class="text-7xl">${ centigrados }&#8451;</p>
+            </div>
+            <div class="pt-10">
+                <p class="capitalize text-3xl opacity-70" style="color: #111827;">${ description }</p>
+                <img src="http://openweathermap.org/img/wn/${icon}@2x.png" class="h-28 w-28 mx-auto">
+            </div>
+            </div>
+            `;
+            contenido.appendChild(card13); 
+        break;
         case 'few clouds':
             const card2 = document.createElement('div');
             card2.innerHTML = `
@@ -148,7 +232,7 @@ function diaActual(data){
                 <p class="text-7xl">${ centigrados }&#8451;</p>
             </div>
             <div class="pt-10">
-                <p class="capitalize">${ description }</p>
+                <p class="capitalize text-3xl opacity-70" style="color: #111827;">${ description }</p>
                 <img src="http://openweathermap.org/img/wn/${icon}@2x.png" class="h-28 w-28 mx-auto">
             </div>
             </div>
@@ -161,10 +245,10 @@ function diaActual(data){
             <div class="">
             <div>
                 <h2 class="text-3xl mb-2">${ name }, ${country }</h2>
-                <p class="text-7xl">${ centigrados }&#8451;</p>p>
+                <p class="text-7xl">${ centigrados }&#8451;</p>
             </div>
             <div class="pt-10">
-                <p class="capitalize">${ description }</p>
+                <p class="capitalize text-3xl opacity-70" style="color: #111827;">${ description }</p>
                 <img src="http://openweathermap.org/img/wn/${icon}@2x.png" class="h-28 w-28 mx-auto">
             </div>
             </div>
@@ -180,9 +264,8 @@ function diaActual(data){
                 <p class="text-7xl">${ centigrados }&#8451;</p>
             </div>
             <div class="pt-10">
-                <p class="capitalize">${ description }</p>
+                <p class="capitalize text-3xl opacity-70" style="color: #111827;">${ description }</p>
                 <img src="http://openweathermap.org/img/wn/${icon}@2x.png" class="h-28 w-28 mx-auto">
-            </div>
             </div>
             `;
             contenido.appendChild(card4); 
@@ -196,7 +279,7 @@ function diaActual(data){
                 <p class="text-7xl">${ centigrados }&#8451;</p>p>
             </div>
             <div class="pt-10">
-                <p class="capitalize">${ description }</p>
+                <p class="capitalize text-3xl opacity-70" style="color: #111827;">${ description }</p>
                 <img src="http://openweathermap.org/img/wn/${icon}@2x.png" class="h-28 w-28 mx-auto">
             </div>
             </div>
@@ -212,7 +295,7 @@ function diaActual(data){
                 <p class="text-7xl">${ centigrados }&#8451;</p>
             </div>
             <div class="pt-10">
-                <p class="capitalize">${ description }</p>
+                <p class="capitalize text-3xl opacity-70" style="color: #111827;">${ description }</p>
                 <img src="http://openweathermap.org/img/wn/${icon}@2x.png" class="h-28 w-28 mx-auto">
             </div>
             </div>
@@ -228,7 +311,7 @@ function diaActual(data){
                 <p class="text-7xl">${ centigrados }&#8451;</p>
             </div>
             <div class="pt-10">
-                <p class="capitalize">${ description }</p>
+                <p class="capitalize text-3xl opacity-70" style="color: #111827;">${ description }</p>
                 <img src="http://openweathermap.org/img/wn/${icon}@2x.png" class="h-28 w-28 m-0 mx-auto">
             </div>
             </div>
@@ -244,7 +327,7 @@ function diaActual(data){
                 <p class="text-7xl">${ centigrados }&#8451;</p>
             </div>
             <div class="pt-10">
-                <p class="capitalize">${ description }</p>
+                <p class="capitalize text-3xl opacity-70" style="color: #111827;">${ description }</p>
                 <img src="http://openweathermap.org/img/wn/${icon}@2x.png" class="h-28 w-28 m-0 mx-auto">
             </div>
             </div>
@@ -260,7 +343,7 @@ function diaActual(data){
                 <p class="text-7xl">${ centigrados }&#8451;</p>
             </div>
             <div class="pt-10">
-                <p class="capitalize">${ description }</p>
+                <p class="capitalize text-3xl opacity-70" style="color: #111827;">${ description }</p>
                 <img src="http://openweathermap.org/img/wn/${icon}@2x.png" class="h-28 w-28 m-0 mx-auto text-white">
             </div>
             </div>
@@ -276,12 +359,28 @@ function diaActual(data){
                 <p class="text-7xl">${ centigrados }&#8451;</p>
             </div>
             <div class="pt-10">
-                <p class="capitalize">${ description }</p>
+                <p class="capitalize text-3xl opacity-70" style="color: #111827;">${ description }</p>
                 <img src="http://openweathermap.org/img/wn/${icon}@2x.png" class="h-28 w-28 m-0 mx-auto text-white">
             </div>
             </div>
             `;
             contenido.appendChild(card10);
+            break;
+        case 'light rain':
+            const card12 = document.createElement('div');
+            card12.innerHTML = `
+            <div class="">
+            <div>
+                <h2 class="text-3xl mb-2" style="color: #111827;">${ name }, ${country }</h2>
+                <p class="text-7xl">${ centigrados }&#8451;</p>
+            </div>
+            <div class="pt-10">
+                <p class="capitalize text-3xl opacity-70" style="color: #111827;">${ description }</p>
+                <img src="http://openweathermap.org/img/wn/${icon}@2x.png" class="h-28 w-28 m-0 mx-auto text-white">
+            </div>
+            </div>
+            `;
+            contenido.appendChild(card12);
             creaHtml(); 
             break;
         default:    
@@ -293,7 +392,7 @@ function diaActual(data){
                 <p class="text-7xl">${ centigrados }&#8451;</p>
             </div>
             <div class="pt-10">
-                <p class="capitalize ">${ description }</p></div>
+                <p class="capitalize opacity-70" style="color: #111827;">${ description }</p></div>
             </div>
             `;
             contenido.appendChild(card11);
@@ -311,4 +410,44 @@ function limpiarHtml(){
     while (contenido.firstChild) {
         contenido.removeChild(contenido.firstChild);
     }
+}
+
+function alerta(mensaje){
+    limpiarHtml();
+    const alertExist = document.querySelector('.text-red-700');
+
+    if (!alertExist) {
+        const divAlerta = document.createElement('div');
+    divAlerta.classList.add('py-2', 'px-4', 'text-red-800','border','border-red-800', 'text-xl', 'bg-red-400', 'text-center', 'rounded');
+    divAlerta.textContent = mensaje;
+
+    contenido.appendChild(divAlerta);
+
+    setTimeout(() => {
+        divAlerta.remove();
+    }, 3000);
+    }
+}
+
+function spinner(){
+
+    limpiarHtml();
+    const divSpinner = document.createElement('div');
+    divSpinner.classList.add('lds-spinner');
+
+    divSpinner.innerHTML = `
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    `;
+
+    contenido.appendChild(divSpinner);
 }
