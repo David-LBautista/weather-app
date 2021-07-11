@@ -1,5 +1,5 @@
-import  _  from '/home/david/.cache/typescript/4.3/node_modules/@types/underscore/index';
-import  moment  from '/home/david/weather-app/node_modules/moment/ts3.1-typings/moment';
+// import  _  from '/home/david/.cache/typescript/4.3/node_modules/@types/underscore/index';
+// import  moment  from '/home/david/weather-app/node_modules/moment/ts3.1-typings/moment';
 
 const formulario = document.querySelector('#formulario');
 const contenido = document.querySelector('#contenido');
