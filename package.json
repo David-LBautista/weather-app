@@ -31,6 +31,8 @@
   "homepage": "https://github.com/David-LBautista/weather-app#readme",
   "description": "",
   "dependencies": {
-    "moment": "^2.29.1"
+    "jshint": "^2.13.0",
+    "moment": "^2.29.1",
+    "underscore": "^1.13.1"
   }
 }
